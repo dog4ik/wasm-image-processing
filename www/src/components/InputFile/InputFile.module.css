@@ -1,0 +1,9 @@
+.inputConteiner {
+  display: flex;
+  flex-direction: row;
+  gap: 10rem;
+}
+
+.loadedSpan {
+  margin-right: 5rem;
+}
