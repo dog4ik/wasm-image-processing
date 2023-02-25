@@ -12,15 +12,15 @@ const InputFile = ({
   onSecondUpload,
   haveSecond,
 }: Props) => {
-  console.log(styles.inputConteiner);
-
   return (
     <>
       <div className={styles.inputConteiner}>
-        <span className={styles.loadedSpan}>
-          {haveFirst ? "Image is loaded" : "Image not selected"}
-        </span>
+        <label htmlFor="file1" className={styles.inputLabel}>
+          {haveFirst ? "1 Image is loaded" : "1 Image not selected"}
+        </label>
         <input
+          className={styles.fileInput}
+          id="file1"
           type="file"
           accept=".jpeg,.jpg,.png"
           onChange={(e) => {
@@ -35,12 +35,12 @@ const InputFile = ({
               reader.readAsArrayBuffer(e.currentTarget.files[0]);
           }}
         />
-      </div>
-      <div className={styles.inputConteiner}>
-        <span className={styles.loadedSpan}>
-          {haveSecond ? "Image is loaded" : "Image not selected"}
-        </span>
+        <label htmlFor="file2" className={styles.inputLabel}>
+          {haveSecond ? "2 Image is loaded" : "2 Image not selected"}
+        </label>
         <input
+          className={styles.fileInput}
+          id="file2"
           type="file"
           accept=".jpeg,.jpg,.png"
           onChange={(e) => {

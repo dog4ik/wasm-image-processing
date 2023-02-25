@@ -1,7 +1,8 @@
 use base64::engine::general_purpose;
 use base64::Engine;
-use image::ImageOutputFormat;
+use image::io::Reader;
 use image::{load_from_memory, DynamicImage, GenericImage, RgbImage};
+use image::{GenericImageView, ImageOutputFormat};
 use std::cmp;
 use std::io::Cursor;
 use wasm_bindgen::prelude::*;
@@ -11,7 +12,18 @@ fn image_to_base64(img: &DynamicImage) -> String {
     img.write_to(&mut Cursor::new(&mut image_data), ImageOutputFormat::Png)
         .unwrap();
     let base64 = general_purpose::STANDARD.encode(image_data);
-    format!("data:image/png;base64,{}", base64)
+    base64
+}
+
+fn base64_to_image(base64_string: &str) -> DynamicImage {
+    let decoded_data = general_purpose::STANDARD.decode(base64_string).unwrap();
+    let cursor = Cursor::new(decoded_data);
+    let image = Reader::new(cursor)
+        .with_guessed_format()
+        .expect("failed to guess image format")
+        .decode()
+        .expect("failed to decode image");
+    image
 }
 
 #[wasm_bindgen]
@@ -57,8 +69,24 @@ pub fn merge_image(first_buf: &[u8], second_buf: &[u8]) -> String {
 }
 
 #[wasm_bindgen]
-pub fn crop_image(image_buf: &[u8], x: u32, y: u32, width: u32, height: u32) -> String {
-    let mut image = load_from_memory(image_buf).unwrap();
-    let croped = image.crop(x, y, width, height);
+pub fn crop_image(
+    image_buf: String,
+    x_percent: u32,
+    y_percent: u32,
+    width_percent: u32,
+    height_percent: u32,
+) -> String {
+    let image = base64_to_image(&image_buf);
+    let (width, height) = image.dimensions();
+    let x_pix = (width as f64 / 100.0) * x_percent as f64;
+    let y_pix = (height as f64 / 100.0) * y_percent as f64;
+    let width_pix = (width as f64 / 100.0) * width_percent as f64;
+    let height_pix = (height as f64 / 100.0) * height_percent as f64;
+    let croped = image.crop_imm(
+        x_pix.round() as u32,
+        y_pix.round() as u32,
+        width_pix.round() as u32,
+        height_pix.round() as u32,
+    );
     image_to_base64(&croped)
 }

@@ -3,10 +3,12 @@ import { console_log, merge_image } from "../../pkg/hello_wasm";
 import { useRef, useState } from "react";
 import CropBar from "./components/CropBar";
 import InputFile from "./components/InputFile/InputFile";
+import ImageSpace from "./components/ImageSpace/ImageSpace";
 
 function App() {
   const [firstImage, setFirstImage] = useState<Uint8Array>();
   const [secondImage, setSecondImage] = useState<Uint8Array>();
+  const [croppedSrc, setCroppedSrc] = useState<string>();
   const [resultImage, setResultImage] = useState<string>();
   const imgRef = useRef<HTMLImageElement>(null);
   function handleClick() {
@@ -15,7 +17,6 @@ function App() {
       setResultImage(result);
     }
   }
-
   function printPage() {
     const iframe = document.createElement("iframe");
     iframe.onload = function () {
@@ -39,23 +40,11 @@ function App() {
   }
   return (
     <div className="container">
-      <div className="image-container">
-        <img
-          className="image"
-          draggable={false}
-          src={resultImage}
-          ref={imgRef}
-        />
-        <div
-          className="crop-sqare"
-          style={{
-            top: "20%",
-            left: "0%",
-            width: "40%",
-            height: "20%",
-          }}
-        />
-      </div>
+      <ImageSpace
+        imgRef={imgRef}
+        onCrop={(img) => setCroppedSrc(img)}
+        img={resultImage}
+      />
       <CropBar />
       {resultImage && (
         <>
@@ -78,6 +67,7 @@ function App() {
           Hi from WASM
         </button>
       </div>
+      <img src={`data:image/png;base64,${croppedSrc}`} />
     </div>
   );
 }

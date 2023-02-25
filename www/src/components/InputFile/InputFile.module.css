@@ -4,6 +4,17 @@
   gap: 10rem;
 }
 
-.loadedSpan {
-  margin-right: 5rem;
+.fileInput {
+  display: none;
+}
+
+.inputLabel {
+  background-color: white;
+  color: black;
+  padding: 2rem;
+  border-radius: 1rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
